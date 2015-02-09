@@ -10,7 +10,7 @@ type MongoENV struct{}
 type MongoVal map[string]string
 
 func (m *MongoENV) Get(k string) MongoVal {
-	var dat map[string]string
+	var dat MongoVal
 	val := os.Getenv(k)
 	json.Unmarshal([]byte(val), &dat)
 	return dat
