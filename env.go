@@ -10,22 +10,22 @@ import (
 	"os"
 )
 
-type MongoENV struct{}
-type MongoVal map[string]string
+type CakvsENV struct{}
+type CakvsVal map[string]string
 
-func (m *MongoENV) Get(k string) MongoVal {
-	var dat MongoVal
+func (m *CakvsENV) Get(k string) CakvsVal {
+	var dat CakvsVal
 	val := os.Getenv(k)
 	json.Unmarshal([]byte(val), &dat)
 	return dat
 }
 
-func (m *MongoENV) Set(k string, val *MongoVal) {
+func (m *CakvsENV) Set(k string, val *CakvsVal) {
 	valString, _ := json.Marshal(val)
 	os.Setenv(k, string(valString))
 }
 
-func (m *MongoENV) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (m *CakvsENV) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Path[len("/"):]
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -43,7 +43,7 @@ func (m *MongoENV) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if err := r.Body.Close(); err != nil {
 			panic(err)
 		}
-		var val MongoVal
+		var val CakvsVal
 		if err := json.Unmarshal(body, &val); err != nil {
 			panic(err)
 		}
@@ -53,7 +53,7 @@ func (m *MongoENV) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	m := MongoENV{}
+	m := CakvsENV{}
 	http.Handle("/", &m)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
